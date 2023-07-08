@@ -1,11 +1,11 @@
 import { TRPCClientError } from "@trpc/client";
-import { useContext, useEffect, useState, type FC } from "react";
+import { useContext, useEffect, useState, FC } from "react";
 import { toast } from "react-toastify";
 import { Bookmarkplus, Comment, Dots, Heart, Share } from "~/svgs";
 import Bookmarked from "~/svgs/Bookmarked";
 import type { Article } from "~/types";
 import { api } from "~/utils/api";
-import { C, type ContextValue } from "~/utils/context";
+import { C, ContextValue } from "~/utils/context";
 
 const ArticleActions: FC<{
   article: Article;
@@ -57,9 +57,27 @@ const ArticleActions: FC<{
     }
   };
 
+  const shareArticle = () => {
+  if ('share' in navigator) {
+    navigator.share({
+      title: 'Share this article',
+      text: 'Check out this article',
+      url: window.location.href,
+    })
+      .then(() => {
+        console.log('Shared successfully');
+      })
+      .catch((error) => {
+        console.error('Error sharing:', error);
+      });
+  } else {
+    console.error('Web Share API not supported');
+  }
+};
+
   return (
     <div className="sticky bottom-4 left-0 flex w-full items-center justify-center gap-2 px-4 py-4">
-      <div className="mx-auto flex items-center justify-between gap-2 rounded-full border border-border-light bg-light-bg px-4 py-1 dark:border-border dark:bg-primary-light sm:w-max">
+      <div className="relative mx-auto flex items-center justify-between gap-2 rounded-full border border-border-light bg-light-bg px-4 py-1 dark:border-border dark:bg-primary-light sm:w-max">
         <button
           aria-label="icon"
           role="button"
@@ -117,6 +135,7 @@ const ArticleActions: FC<{
           aria-label="icon"
           role="button"
           className="flex items-center gap-2 rounded-full p-2 text-gray-700 hover:bg-text-secondary dark:text-text-secondary dark:hover:bg-border"
+          onClick={shareArticle}
         >
           <div className="flex items-center justify-center gap-2">
             <Share className="h-5 w-5 fill-none stroke-border dark:stroke-text-primary md:h-6 md:w-6" />
